@@ -1,19 +1,24 @@
+# 服务器相关配置
 server:
+  # 指定应用启动的端口号
   port: 8080
   servlet:
+    # 应用访问的基础路径
     context-path: /api
+
+# Spring框架相关配置
 spring:
   profiles:
+    # 激活的环境配置（dev为开发环境，prod为生产环境）
     active: dev
-  #    active: prod
   datasource:
-    #数据库驱动完整类名
+    # 数据库驱动完整类名
     driver-class-name: com.mysql.cj.jdbc.Driver
-    #数据库连接url
+    # 数据库连接URL
     url: jdbc:mysql://127.0.0.1:3306/cip
-    #数据库用户名
+    # 数据库用户名
     username: root
-    #数据库密码
+    # 数据库密码
     password: 123456
   data:
     redis:
@@ -36,49 +41,60 @@ spring:
           # 连接池中的最小空闲连接 默认 0
           min-idle: 0
   mail:
+    # SMTP邮件服务器主机地址
     host: smtp.mxhichina.com
-    #    port: 465
-    username: bioadmin@oriseq.com
-    password: bioinfo@oriseq123
+    # 邮件账户用户名
+    username: b432432
+    # 邮件账户密码
+    password: b432423feg
   servlet:
     multipart:
-      # 最大的上传大小
+      # 单个文件最大上传大小
       max-file-size: 50MB
-      # 最大请求大小
+      # 整体请求的最大大小
       max-request-size: 50MB
 
-# 上传功能
-# Windows 下的下载路径
+# 自定义文件上传目录配置
 file:
+  # 文件上传存储目录（Windows环境下）
   upload-dir: CIPUploads
 
-
-# 阿里云短信服务
+# 阿里云短信服务配置
 alibaba-cloud-sms:
+  # 访问阿里云API的Access Key ID
   access-key-id: LTAI5tPv1tKxxxxx
+  # 访问阿里云API的Access Key Secret
   access-key-secret: jqgMnxLTqYxxxxxx
-# 配置短信模板
+
+# 短信模板配置
 sms:
   templateCode:
+    # 登录验证码短信模板ID
     login: SMS_474895975
+    # 重置密码短信模板ID
     reset_password: SMS_474801035
+    # 修改手机号码短信模板ID
     reset_phone: SMS_474811031
 
-
+# MyBatis Plus 相关配置
 mybatis-plus:
-  # mybatis-plus  配置文件所在位置
+  # MyBatis配置文件位置
   config-location: classpath:mybatis/mybatis-config.xml
-  # mybatis-plus mapper 文件所在位置
+  # Mapper XML文件的位置
   mapper-locations: classpath:mybatis/mapper/*.xml
   global-config:
-    # 全局配置
     db-config:
-      # 数据库配置
+      # 主键生成策略（auto表示数据库自增）
       id-type: auto
-    logic-delete-field: is_del # 全局逻辑删除字段名
-    logic-delete-value: 1 # 逻辑已删除值
-    logic-not-delete-value: 0 # 逻辑未删除值
+    # 全局逻辑删除字段名
+    logic-delete-field: is_del
+    # 逻辑已删除值
+    logic-delete-value: 1
+    # 逻辑未删除值
+    logic-not-delete-value: 0
 
+# 日志级别设置
 logging:
   level:
+    # 设置com.oriseq包下的日志级别为debug
     com.oriseq: debug
