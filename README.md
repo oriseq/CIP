@@ -43,10 +43,8 @@
 
 ## :alembic: 技术栈
 
-- **后端
-  **： [JDK17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) + [Spring Boot 3](https://docs.springframework.org.cn/spring-framework/reference/spring-projects.html) + [Redis](https://redis.io/) + [MySQL](https://www.mysql.com/)
-- **前端
-  **： [Vue](https://cn.vuejs.org/) + [Typescript](https://www.tslang.cn/) + [Vben-Admin](https://doc.vvbin.cn/guide/introduction.html) + [Ant-Design-Vue](https://www.antdv.com/docs/vue/introduce-cn)
+- **后端**： [JDK17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) + [Spring Boot 3](https://docs.springframework.org.cn/spring-framework/reference/spring-projects.html) + [Redis](https://redis.io/) + [MySQL](https://www.mysql.com/)
+- **前端**： [Vue](https://cn.vuejs.org/) + [Typescript](https://www.tslang.cn/) + [Vben-Admin](https://doc.vvbin.cn/guide/introduction.html) + [Ant-Design-Vue](https://www.antdv.com/docs/vue/introduce-cn)
 
 ## :raising_hand: 代码贡献
 
