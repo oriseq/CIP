@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oriseq.mapper.ProjectReferencesMapper">
+
+    <resultMap id="BaseResultMap" type="com.oriseq.dtm.entity.ProjectReferences">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="projectId" column="project_id" jdbcType="BIGINT"/>
+        <result property="userGroupId" column="user_group_id" jdbcType="BIGINT"/>
+        <result property="price" column="price" jdbcType="DECIMAL"/>
+        <result property="creationTime" column="creation_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,project_id,user_group_id,
+        price,creation_time,update_time
+    </sql>
+    <select id="selectProjects" resultType="com.oriseq.dtm.dto.ProjectListDTO">
+        SELECT
+        pr.id,
+        pm.id AS originProjectId,
+        pm.project_name,
+        pm.detect_method,
+        pm.consumable_type,
+        user_group.group_name AS user_group_name,
+        pm.price,
+        pr.price_coefficient,
+        pr.default_delivery_unit_id,
+        du.name AS default_delivery_unit_name,
+        TRUNCATE(pm.price * pr.price_coefficient, 2) AS discounted_price
+        FROM
+        `project_references` pr
+        INNER JOIN project_master pm ON pm.Id = pr.project_id
+        INNER JOIN user_group ON pr.user_group_id = user_group.id
+        left join delivery_unit du on pr.default_delivery_unit_id = du.id
+        <where>
+            ${ew.sqlSegment}
+        </where>
+    </select>
+    <select id="getSUMProjectPrice" resultType="com.oriseq.dtm.dto.ProjectPriceDTO">
+        SELECT SUM(pm.price) AS total_price,
+        SUM(pr.price_coefficient * pm.price) AS total_discounted_price
+        from project_master pm
+        left join (SELECT *
+        from project_references pr
+        <where>
+            ${innew.sqlSegment}
+            and pr.user_group_id = #{userGroupId}
+        </where>) as pr
+        on pr.project_id = pm.Id
+        <where>
+            ${ew.sqlSegment}
+        </where>
+    </select>
+    <select id="getProjectNumAndSpend" resultType="com.oriseq.dtm.dto.ProjectStatisticsDTO">
+        SELECT
+        sp.*,
+        pm.project_name,
+        s.sample_user_group_id,
+        ug.group_name,
+        pm.price,
+        TRUNCATE(pm.price * pr.price_coefficient, 2) AS discounted_price
+        FROM
+        `sample_project` sp
+        INNER JOIN sample s ON s.id = sp.sample_id and s.is_del = 0
+        INNER JOIN project_master pm ON pm.Id = sp.project_id
+        INNER JOIN project_references pr ON pr.project_id = sp.project_id
+        AND pr.user_group_id = s.sample_user_group_id
+        LEFT JOIN user_group ug ON ug.id = s.sample_user_group_id
+        <where>
+            sp.is_del = 0 and
+            ${ew.sqlSegment}
+        </where>
+    </select>
+</mapper>

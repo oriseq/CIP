@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper接口类对应的位置-->
+<mapper namespace="com.oriseq.mapper.UsersMapper">
+    <select id="selectUserInfo" resultType="com.oriseq.dtm.dto.UserDTO">
+        SELECT user.*, ug.group_name user_group_name
+        FROM `user`
+        left join user_group ug
+        on user.user_group_id = ug.id
+        <where>
+            ${ew.sqlSegment}
+        </where>
+    </select>
+    <select id="selectGroupUsersCascader" resultType="com.oriseq.dtm.dto.GroupUsersCascaderDTO">
+        SELECT ug.group_name,
+               ug.id AS user_group_id,
+               u.username,
+               u.real_name,
+               u.id  AS user_id
+        FROM `user_group` ug
+                 INNER JOIN `user` u ON u.user_group_id = ug.id
+    </select>
+</mapper>

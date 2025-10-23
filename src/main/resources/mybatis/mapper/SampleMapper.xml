@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper接口类对应的位置-->
+<mapper namespace="com.oriseq.mapper.SampleMapper">
+
+    <resultMap id="BaseResultMap" type="com.oriseq.dtm.entity.Sample">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="sampleId" column="sample_id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="INTEGER"/>
+        <result property="age" column="age" jdbcType="INTEGER"/>
+        <result property="birthday" column="birthday" jdbcType="DATE"/>
+        <result property="isBirthInput" column="is_birth_input" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="userGroupId" column="user_group_id" jdbcType="BIGINT"/>
+        <result property="sampleUserGroupId" column="sample_user_group_id" jdbcType="BIGINT"/>
+        <result property="annexFileId" column="annex_file_id" jdbcType="VARCHAR"/>
+        <result property="submissionTime" column="submission_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="logisticsTrackingNumber" column="logistics_tracking_number" jdbcType="VARCHAR"/>
+        <result property="phoneNumLastFour" column="phone_num_last_four" jdbcType="VARCHAR"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+        <result property="reportId" column="report_id" jdbcType="VARCHAR"/>
+        <result property="submitNumberToday" column="submit_number_today" jdbcType="VARCHAR"/>
+        <result property="isDel" column="is_del" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <select id="selectInfoById" resultType="com.oriseq.dtm.dto.SampleDTO">
+        SELECT
+        s.*,
+        sp.project_id,
+        sp.project_status,
+        pm.project_name
+        FROM
+        `sample` s
+        left JOIN sample_project sp ON s.id = sp.sample_id
+        left JOIN project_master pm ON sp.project_id = pm.id
+        <where>
+            <if test="id != null">
+                and s.id = #{id}
+            </if>
+            and sp.is_del = 0
+        </where>
+    </select>
+    <select id="selectPageSamples" resultMap="SampleResultMap">
+        SELECT
+        s.*,
+        COUNT(sp.project_id) AS project_count,
+        SUM(CASE WHEN sp.project_status != 0 THEN 1 ELSE 0 END) AS non_zero_project_count,
+        ug.group_name as sample_user_group_name
+        FROM
+        sample s
+        LEFT JOIN
+        sample_project sp ON s.id = sp.sample_id and sp.is_del = 0
+        left join user_group ug on ug.id = s.sample_user_group_id
+        <where>
+            <if test="projectIds != null and projectIds.size() > 0">
+                s.id IN (
+                SELECT
+                sp.sample_id
+                FROM
+                sample_project sp
+                WHERE
+                sp.project_id IN
+                <foreach collection="projectIds" item="projectId" open="(" separator="," close=")">
+                    #{projectId}
+                </foreach>
+                )
+            </if>
+            <if test="ew != null">
+                and
+                ${ew.sqlSegment}
+            </if>
+
+        </where>
+    </select>
+    <select id="selectProjectsBySampleIds" resultType="com.oriseq.dtm.entity.Project">
+        SELECT
+        p.*,
+        sp.sample_id,
+        sp.project_status,
+        sp.id as sampleProjectId,
+        sp.creation_time,
+        sp.delivery_unit,
+        CASE
+        WHEN sp.delivery_unit IS NOT NULL THEN 1
+        ELSE 0
+        END AS is_delivery_outside
+        FROM
+        project_master p
+        INNER JOIN
+        sample_project sp ON p.id = sp.project_id
+        WHERE
+        sp.sample_id IN
+        <foreach collection="sampleIds" item="sampleId" open="(" separator="," close=")">
+            #{sampleId}
+        </foreach>
+        and sp.is_del = 0
+    </select>
+    <select id="staticProjectItemizedSpend" resultType="com.oriseq.dtm.dto.ProjectItemizedSpendDTO">
+        select s.sample_id,
+               sp.creation_time,
+               s.name,
+               pm.project_name,
+               pm.price,
+               s.remarks                                    as sample_remarks,
+               sp.remarks                                   as project_remarks,
+               TRUNCATE(pm.price * pr.price_coefficient, 2) AS discounted_price
+        from sample s
+                 inner join sample_project sp on s.id = sp.sample_id and sp.is_del = 0
+                 inner join project_master pm on pm.id = sp.project_id
+                 inner join project_references pr
+                            on pr.project_id = sp.project_id and pr.user_group_id = s.sample_user_group_id
+                 left join user_group ug on ug.id = s.sample_user_group_id
+            ${ew.customSqlSegment}
+    </select>
+    <resultMap id="SampleResultMap" type="com.oriseq.dtm.entity.Sample">
+        <id property="id" column="id"/>
+        <result property="sampleId" column="sample_id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="INTEGER"/>
+        <result property="age" column="age" jdbcType="INTEGER"/>
+        <result property="birthday" column="birthday" jdbcType="DATE"/>
+        <result property="isBirthInput" column="is_birth_input" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="userGroupId" column="user_group_id" jdbcType="BIGINT"/>
+        <result property="sampleUserGroupId" column="sample_user_group_id" jdbcType="BIGINT"/>
+        <result property="annexFileId" column="annex_file_id" jdbcType="VARCHAR"/>
+        <result property="submissionTime" column="submission_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="logisticsTrackingNumber" column="logistics_tracking_number" jdbcType="VARCHAR"/>
+        <result property="phoneNumLastFour" column="phone_num_last_four" jdbcType="VARCHAR"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+        <result property="reportId" column="report_id" jdbcType="VARCHAR"/>
+        <result property="submitNumberToday" column="submit_number_today" jdbcType="VARCHAR"/>
+        <result property="isDel" column="is_del" jdbcType="TINYINT"/>
+        <result property="projectCount" column="project_count"/>
+        <result property="sampleUserGroupName" column="sample_user_group_name"/>
+        <!--       查询集合类  -->
+        <!--        <collection property="projects" ofType="com.oriseq.dtm.entity.Project">-->
+        <!--            <id property="id" column="id"/>-->
+        <!--            <result property="projectName" column="project_name"/>-->
+        <!--        </collection>-->
+    </resultMap>
+</mapper>

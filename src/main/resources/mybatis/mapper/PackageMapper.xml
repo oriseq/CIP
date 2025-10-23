@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper接口类对应的位置-->
+<mapper namespace="com.oriseq.mapper.PackageMapper">
+    <select id="getPackageInfo">
+
+    </select>
+    <select id="selectBelongingPackage" resultType="com.oriseq.dtm.dto.PackageGroupDTO">
+        select package.id            package_id,
+               package.package_info  package_name,
+               package.user_group_id userGroupId,
+               user_group.group_name
+        from package
+                 inner join user_group on user_group.id = package.user_group_id
+    </select>
+    <select id="selectPackageMangInfo" resultType="com.oriseq.dtm.dto.PackageManageInfoDTO">
+        select package.id,
+        package.package_info package_name,
+        package.remarks,
+        user_group.group_name user_group_name,
+        project_id_list,
+        user_group_id
+        from package
+        left join user_group on package.user_group_id = user_group.id
+        <where>
+            ${ew.sqlSegment}
+        </where>
+    </select>
+</mapper>

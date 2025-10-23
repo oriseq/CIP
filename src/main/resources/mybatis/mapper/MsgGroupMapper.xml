@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oriseq.mapper.MsgGroupMapper">
+
+    <resultMap id="BaseResultMap" type="com.oriseq.dtm.entity.MsgGroup">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userIds" column="user_ids" javaType="cn.hutool.json.JSONArray"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result property="groupIdentify" column="group_identify" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,user_ids,group_identify
+    </sql>
+</mapper>
