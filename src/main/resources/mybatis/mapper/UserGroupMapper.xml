@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper接口类对应的位置-->
+<mapper namespace="com.oriseq.mapper.UserGroupMapper">
+    <!--id 为方法名，parameterType为参数类型，该属性可选。
+     resultType 期望从这条语句中返回结果的类全限定名或别名。 注意，如果返回的是集合，那应该设置为集合包含的类型，而不是集合本身的类型。 resultType 和 resultMap 之间只能同时使用一个。 -->
+    <!--在这些情况下，MyBatis 会在幕后自动创建一个 ResultMap，再根据属性名来映射列到 JavaBean 的属性上。如果列名和属性名不能匹配上，可以在 SELECT 语句中设置列别名（这是一个基本的 SQL 特性）来完成匹配。-->
+    <!--例如:   select
+    user_id             as "id",
+    user_name           as "userName",
+    hashed_password     as "hashedPassword"
+  from some_table
+  where id ={id} -->
+
+    <resultMap id="BaseResultMap" type="com.oriseq.dtm.entity.Permission">
+        <id property="id" column="Id" jdbcType="BIGINT"/>
+        <result property="permissionName" column="permission_name" jdbcType="VARCHAR"/>
+        <result property="permissionIdentifier" column="permission_identifier" jdbcType="VARCHAR"/>
+        <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="route" column="route" jdbcType="VARCHAR"/>
+        <result property="orderNo" column="order_no" jdbcType="INTEGER"/>
+        <result property="level" column="level" jdbcType="TINYINT"/>
+        <result property="enable" column="enable" jdbcType="TINYINT"/>
+        <result property="meta" column="meta" javaType="cn.hutool.json.JSONObject"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+    </resultMap>
+
+    <select id="getUserGroupById" resultType="com.oriseq.dtm.entity.UserGroup" parameterType="long">
+        select *
+        from user_group
+        where id = #{id}
+    </select>
+
+    <select id="getGeneralUserPermissionByPhone" resultMap="BaseResultMap">
+        SELECT p.*
+        FROM user u
+                 INNER JOIN open_permissions op ON u.id = op.user_id
+                 RIGHT JOIN permissions p ON op.permission_id = p.Id
+        WHERE (p.type = "M" or p.type = "C")
+            and u.phone_number = #{phone} and p.level = 2
+           or p.level is null
+        ORDER BY p.order_no ASC, p.parent_id ASC;
+    </select>
+    <select id="getButtonPermission" resultType="com.oriseq.dtm.entity.Permission">
+        SELECT p.*
+        FROM user u
+        INNER JOIN open_permissions op ON u.id = op.user_id
+        INNER JOIN permissions p ON op.permission_id = p.Id
+        <where>
+            <if test="ew != null">
+                ${ew.sqlSegment}
+            </if>
+        </where>
+        ORDER BY p.parent_id ASC,
+        p.order_no ASC;
+    </select>
+</mapper>

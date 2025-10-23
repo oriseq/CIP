@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper接口类对应的位置-->
+<mapper namespace="com.oriseq.mapper.SampleProjectMapper">
+
+    <resultMap id="BaseResultMap" type="com.oriseq.dtm.entity.SampleProject">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="sampleId" column="sample_id" jdbcType="BIGINT"/>
+        <result property="projectId" column="project_id" jdbcType="BIGINT"/>
+        <result property="projectStatus" column="project_status" jdbcType="INTEGER"/>
+        <result property="fileId" column="file_id" jdbcType="BIGINT"/>
+        <result property="polarity" column="polarity" jdbcType="VARCHAR"/>
+        <result property="reviewResults" column="review_results" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,sample_id,project_id,
+        project_status,file_id,polarity,
+        review_results
+    </sql>
+
+    <select id="selectProjects" resultType="com.oriseq.dtm.dto.ProjectManageDTO">
+        SELECT
+        sp.id AS sample_projectId,
+        sp.project_id,
+        sp.project_status,
+        pm.project_name,
+        sp.file_id,
+        sp.polarity,
+        sp.review_results,
+        sp.delivery_unit,
+        sp.delivery_person,
+        sp.remarks,
+        sp.result_img,
+        sp.deadline,
+        pm.instrument_id
+        FROM
+        `sample_project` sp
+        INNER JOIN project_master pm ON sp.project_id = pm.Id
+        <where>
+            ${ew.sqlSegment}
+        </where>
+    </select>
+    <select id="selectNeedAlarmSampleProject" resultType="com.oriseq.dtm.dto.NeedAlarmSampleProjectDTO">
+        select sp.id,
+               sp.deadline,
+               s.name,
+               s.id      as sample_id,
+               s.user_id as sample_submitter_user_id,
+               pm.remaining_hour,
+               pm.project_name
+        from sample_project sp
+                 inner join sample s on s.id = sp.sample_id
+                 inner join project_master pm on pm.Id = sp.project_id
+        where pm.remaining_hour is not null
+          and sp.project_status not in (0, 4)
+          and sp.is_alarm_sent = 0
+          and sp.deadline is not null
+          and sp.is_del = 0
+    </select>
+</mapper>

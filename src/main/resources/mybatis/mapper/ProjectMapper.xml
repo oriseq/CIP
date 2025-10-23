@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper接口类对应的位置-->
+<mapper namespace="com.oriseq.mapper.ProjectMapper">
+    <resultMap id="BaseResultMap2" type="com.oriseq.dtm.dto.innerProject.InnerProjectSearchDTO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="reportDate" column="report_date" jdbcType="VARCHAR"/>
+        <result property="detectMethod" column="detect_method" jdbcType="VARCHAR"/>
+        <result property="consumableType" column="consumable_type" jdbcType="VARCHAR"/>
+        <result property="projectCategoryId" column="project_category_id" jdbcType="BIGINT"/>
+        <result property="price" column="price" jdbcType="DECIMAL"/>
+        <result property="projectCategoryName" column="project_category_name" jdbcType="VARCHAR"/>
+        <result property="sampleRequirements" column="sample_requirements" jdbcType="VARCHAR"/>
+        <result property="isReportHourMinutesEnd" column="is_report_hour_minutes_end" jdbcType="TINYINT"/>
+        <result property="reportDay" column="report_day" jdbcType="INTEGER"/>
+        <result property="reportHour" column="report_hour" jdbcType="INTEGER"/>
+        <!--        <result property="disableWeek" column="disable_week" jdbcType="OTHER"/>-->
+        <result property="disableWeek" column="disable_week" javaType="cn.hutool.json.JSONArray"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result property="remainingHour" column="remaining_hour" jdbcType="VARCHAR"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+        <result property="deliveryUnitIds" column="delivery_unit_ids" javaType="cn.hutool.json.JSONArray"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result property="instrumentName" column="instrument_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="ProjectDTOResultMap" type="com.oriseq.dtm.dto.ProjectDTO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="reportDate" column="report_date" jdbcType="VARCHAR"/>
+        <result property="detectMethod" column="detect_method" jdbcType="VARCHAR"/>
+        <result property="consumableType" column="consumable_type" jdbcType="VARCHAR"/>
+        <result property="projectCategoryId" column="project_category_id" jdbcType="BIGINT"/>
+        <result property="pcId" column="pc_id" jdbcType="BIGINT"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
+        <result property="isSingleItem" column="is_single_item" jdbcType="INTEGER"/>
+        <result property="deliveryUnitIds" column="delivery_unit_ids" javaType="cn.hutool.json.JSONArray"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+    </resultMap>
+
+
+    <select id="selectAllProjectsByUserGroupId" resultMap="ProjectDTOResultMap">
+        SELECT pc.id as pc_id,
+        pc.`name` as name,
+        pc.parent_id as parent_id,
+        pj.*
+        FROM project_classification pc
+        LEFT JOIN
+        <if test="param1 != null and param1 == 1">
+            (SELECT *
+            FROM project_master)
+        </if>
+        <if test="param1 == null or param1 != 1">
+            (SELECT p.*
+            FROM project_references pr
+            LEFT JOIN project_master p ON pr.project_id = p.id
+            WHERE pr.user_group_id = #{param2})
+        </if>
+        AS pj ON pc.id = pj.project_category_id
+    </select>
+    <select id="selectAllProjectIdsByUserGroupId" resultType="java.lang.String">
+        SELECT project_id FROM `project_references`
+        <where>
+            user_group_id = #{userGroupId}
+        </where>
+    </select>
+    <select id="selectListByGroupId" resultType="project">
+        SELECT pm.*
+        FROM `project_references` pr
+                 LEFT JOIN project_master pm ON pm.Id = pr.project_id
+        WHERE user_group_id = #{userGroupId}
+    </select>
+    <select id="selectExtendList" resultMap="BaseResultMap2">
+        select pm.*,pc.name as project_category_name,i.name instrument_name
+        from project_master pm
+        left join project_classification pc
+        on pm.project_category_id = pc.id
+        left join instrument i
+        on pm.instrument_id = i.id
+        <where>
+            ${ew.sqlSegment}
+        </where>
+    </select>
+    <select id="selectAllProjects" resultType="com.oriseq.dtm.dto.ProjectDTO">
+        SELECT pc.id        as pc_id,
+               pc.`name`    as name,
+               pc.parent_id as parent_id,
+               pj.*
+        FROM project_classification pc
+                 LEFT JOIN project_master
+            AS pj ON pc.id = pj.project_category_id
+    </select>
+</mapper>

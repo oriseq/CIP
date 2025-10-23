@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper接口类对应的位置-->
+<mapper namespace="com.oriseq.mapper.PermissionMapper">
+
+    <select id="hasPermission" resultType="int">
+        SELECT *
+        FROM permissions p
+                 INNER JOIN `open_permissions` op ON p.Id = op.permission_id
+        WHERE p.type = 'F'
+          AND permission_identifier = #{permissionCode}
+          AND op.user_id = #{userId}
+          AND p.level = 2
+    </select>
+</mapper>

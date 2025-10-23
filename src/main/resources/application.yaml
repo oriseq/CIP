@@ -1,0 +1,84 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+spring:
+  profiles:
+    active: dev
+  #    active: prod
+  datasource:
+    #数据库驱动完整类名
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #数据库连接url
+    url: jdbc:mysql://127.0.0.1:3306/cip
+    #数据库用户名
+    username: root
+    #数据库密码
+    password: 123456
+  data:
+    redis:
+      # Redis数据库索引（默认为0）
+      database: 0
+      # Redis服务器地址
+      host: localhost
+      # Redis服务器连接端口
+      port: 6379
+      # Redis服务器连接密码（默认为空）
+      password:
+      lettuce:
+        pool:
+          # 连接池最大连接数（使用负值表示没有限制） 默认 8
+          max-active: 8
+          # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1
+          max-wait: -1
+          # 连接池中的最大空闲连接 默认 8
+          max-idle: 8
+          # 连接池中的最小空闲连接 默认 0
+          min-idle: 0
+  mail:
+    host: smtp.mxhichina.com
+    #    port: 465
+    username: bioadmin@oriseq.com
+    password: bioinfo@oriseq123
+  servlet:
+    multipart:
+      # 最大的上传大小
+      max-file-size: 50MB
+      # 最大请求大小
+      max-request-size: 50MB
+
+# 上传功能
+# Windows 下的下载路径
+file:
+  upload-dir: CIPUploads
+
+
+# 阿里云短信服务
+alibaba-cloud-sms:
+  access-key-id: LTAI5tPv1tKxxxxx
+  access-key-secret: jqgMnxLTqYxxxxxx
+# 配置短信模板
+sms:
+  templateCode:
+    login: SMS_474895975
+    reset_password: SMS_474801035
+    reset_phone: SMS_474811031
+
+
+mybatis-plus:
+  # mybatis-plus  配置文件所在位置
+  config-location: classpath:mybatis/mybatis-config.xml
+  # mybatis-plus mapper 文件所在位置
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  global-config:
+    # 全局配置
+    db-config:
+      # 数据库配置
+      id-type: auto
+    logic-delete-field: is_del # 全局逻辑删除字段名
+    logic-delete-value: 1 # 逻辑已删除值
+    logic-not-delete-value: 0 # 逻辑未删除值
+
+logging:
+  level:
+    com.oriseq: debug

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--mybatis 全局配置文件-->
+<configuration>
+    <settings>
+        <!--开启驼峰命名-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--        SQL语句打印到控制台  -->
+        <!--        <setting name="log-sql" value="true"/>-->
+    </settings>
+    <!--进行别名命名，自定义类型别名 这样就不需要写全限定名-->
+    <typeAliases>
+        <!--        <typeAlias type="com.oriseq.dtm.entity.User" alias="User"/>-->
+        <package name="com.oriseq.dtm.entity"/>
+    </typeAliases>
+</configuration>
