@@ -33,7 +33,7 @@
 
 ## :hammer_and_wrench: 启动和部署
 
-你可以参考 [部署](.../docs/deploy/) 进行启动和部署。
+你可以参考 [启动和部署](https://cip.oriseq.com/docs/getting-started.html) 进行启动和部署。
 
 ## :eyes: 演示
 
