@@ -44,7 +44,7 @@
 
 ## :hammer_and_wrench: Deploy & Build
 
-you can refer to [Deploy](.../docs/deploy/) for setup and build.
+you can refer to [Deploy & Build](https://cip.oriseq.com/docs/getting-started.html) for setup and build.
 
 ## :eyes: Demo
 
